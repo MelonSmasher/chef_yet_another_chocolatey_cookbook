@@ -1,56 +1,84 @@
-# yacc Cookbook
+# YACC (Yet Another Chocolatey Cookbook)
 
-TODO: Enter the cookbook description here.
-
-e.g.
-This cookbook makes your favorite breakfast sandwich.
+Manages chocolatey packages through parameters.
 
 ## Requirements
 
-TODO: List your cookbook requirements. Be sure to include any requirements this cookbook has on platforms, libraries, other cookbooks, packages, operating systems, etc.
-
-e.g.
 ### Platforms
 
-- SandwichOS
+- Windows
 
 ### Chef
 
 - Chef 12.0 or later
 
-### Cookbooks
-
-- `toaster` - yacc needs toaster to brown your bagel.
-
 ## Attributes
 
-TODO: List your cookbook attributes here.
+Set the chocolatey source: (Default: `https://chocolatey.org/api/v2`)
 
-e.g.
-### yacc::default
+```json
+{
+  "yacc" : {
+    "source" : "https://chocolatey.org/api/v2"
+  }
+}
+```
 
-<table>
-  <tr>
-    <th>Key</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  <tr>
-    <td><tt>['yacc']['bacon']</tt></td>
-    <td>Boolean</td>
-    <td>whether to include bacon</td>
-    <td><tt>true</tt></td>
-  </tr>
-</table>
+
+Determine if failures should be ignored(Default: `false`):
+
+```json
+{
+  "yacc" : {
+    "ignore_failure" : true
+  }
+}
+```
+
+Global install options that will be run with each choco install (Default: `[]`)
+
+```json
+{
+  "yacc" : {
+    "install_options" : [
+      "--cachelocation C:\\temp"
+    ]
+  }
+}
+```
+
+Define packages:
+
+```json
+{
+  "yacc" : {
+    "packages" : {
+      "googlechrome": {
+        "action": "56.0.2924.76",
+        "install_options": "--ignorechecksum"
+      },
+      "firefox": {
+        "action": "upgrade",
+        "source": "https://private.repo.com/api/v2",
+        "install_options": [
+          "--ignorechecksum",
+          "--cachelocation C:\\windows\\temp"
+        ]
+      },
+      "chocolateygui": {
+        "action": "purge"
+      }
+    }
+  }
+}
+```
+
+The `action` field follows the same actions as [this documentation](https://docs.chef.io/resource_chocolatey_package.html), it also can take a version number.
 
 ## Usage
 
 ### yacc::default
 
-TODO: Write usage instructions for each cookbook.
-
-e.g.
 Just include `yacc` in your node's `run_list`:
 
 ```json
@@ -61,20 +89,4 @@ Just include `yacc` in your node's `run_list`:
   ]
 }
 ```
-
-## Contributing
-
-TODO: (optional) If this is a public cookbook, detail the process for contributing. If this is a private cookbook, remove this section.
-
-e.g.
-1. Fork the repository on Github
-2. Create a named feature branch (like `add_component_x`)
-3. Write your change
-4. Write tests for your change (if applicable)
-5. Run the tests, ensuring they all pass
-6. Submit a Pull Request using Github
-
-## License and Authors
-
-Authors: TODO: List authors
 
