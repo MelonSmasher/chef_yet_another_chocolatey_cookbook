@@ -37,7 +37,7 @@ end
 # Loop over packages
 node['yacc']['packages'].each do |package, package_options|
   # Grab the desired action/version
-  action = package_options['action']
+  action_option = package_options['action']
   # Is the source overridden for this package?
   source = package_options['source'] if not package_options['action'].empty?
   # If there are any package specific install options append them to the global install options
@@ -57,7 +57,7 @@ node['yacc']['packages'].each do |package, package_options|
 
   end
   # Switch over the various actions and pass in the correct action symbol
-  case action
+  case action_option
     when 'install'
       run_upstream(:install, install_options, source, ignore_failure)
     when 'purge'
@@ -72,7 +72,7 @@ node['yacc']['packages'].each do |package, package_options|
       run_upstream(:upgrade, install_options, source, ignore_failure)
     else # If we make it here, try the action as a version number.
       chocolatey_package package do
-        version action
+        version action_option
         options install_options
         source source
         ignore_failure ignore_failure
