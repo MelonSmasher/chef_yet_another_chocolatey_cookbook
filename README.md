@@ -1,6 +1,6 @@
 # YACC (Yet Another Chocolatey Cookbook)
 
-Manages chocolatey packages through parameters.
+Manages chocolatey packages through attributes.
 
 ## Requirements
 
