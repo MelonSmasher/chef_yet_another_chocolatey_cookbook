@@ -57,8 +57,16 @@ node['yacc']['packages'].each do |package, package_options|
       end
     end
   end
-  # If the install options are empty make into a blank string otherwise strip each element of the array and join into a string separated by spaces
-  install_options = install_options.empty? ? '' : install_options.is_a? Array ? install_options.each { |a| a.strip! if a.respond_to? :strip! }.join(' ') : install_options.strip
+
+  if install_options.is_a? Array
+    # If the install options are empty make into a blank string otherwise strip each element of the array and join into a string separated by spaces
+    install_options = install_options.empty? ? '' : install_options.each { |a| a.strip! if a.respond_to? :strip! }.join(' ')
+  elsif install_options.is_a? String
+    install_options.strip!
+  else
+    install_options = ''
+  end
+
   # Switch over the various actions and pass in the correct action symbol
   case action_option
     when 'install'
