@@ -24,7 +24,7 @@ unless node['yacc']['install_options'].nil?
     # Are the install options an array?
     if node['yacc']['install_options'].is_a? Array
       # Join into a single array
-      install_options = node['yacc']['install_options'].concat(install_options)
+      install_options = install_options.to_a += node['yacc']['install_options'].to_a
     else
       log 'YACC Global' do
         message "Global install options are malformed ignoring..."
@@ -47,7 +47,7 @@ node['yacc']['packages'].each do |package, package_options|
         # Check to see if it's an array or string
         if package_options['install_options'].is_a? Array
           # Join the arrays into a single array
-          install_options = package_options['install_options'].concat(install_options)
+          install_options = install_options.to_a += package_options['install_options'].to_a
         else
           log 'YACC Package' do
             message "The package: '#{package}' contains a malformed install option, ignoring..."
@@ -60,31 +60,29 @@ node['yacc']['packages'].each do |package, package_options|
 
   if install_options.is_a? Array
     # If the install options are empty make into a blank string otherwise strip each element of the array and join into a string separated by spaces
-    install_options = install_options.empty? ? '' : install_options.each { |a| a.strip! if a.respond_to? :strip! }.join(' ')
-  elsif install_options.is_a? String
-    install_options.strip!
+    final_install_options = install_options.to_a.empty? ? '' : install_options.to_a.each { |a| a.strip! if a.respond_to? :strip! }.join(' ')
   else
-    install_options = ''
+    final_install_options = ''
   end
 
   # Switch over the various actions and pass in the correct action symbol
   case action_option
     when 'install'
-      run_upstream(package, :install, install_options, source, ignore_failure)
+      run_upstream(package, :install, final_install_options, source, ignore_failure)
     when 'purge'
-      run_upstream(package, :purge, install_options, source, ignore_failure)
+      run_upstream(package, :purge, final_install_options, source, ignore_failure)
     when 'reconfig'
-      run_upstream(package, :reconfig, install_options, source, ignore_failure)
+      run_upstream(package, :reconfig, final_install_options, source, ignore_failure)
     when 'remove'
-      run_upstream(package, :remove, install_options, source, ignore_failure)
+      run_upstream(package, :remove, final_install_options, source, ignore_failure)
     when 'uninstall'
-      run_upstream(package, :uninstall, install_options, source, ignore_failure)
+      run_upstream(package, :uninstall, final_install_options, source, ignore_failure)
     when 'upgrade'
-      run_upstream(package, :upgrade, install_options, source, ignore_failure)
+      run_upstream(package, :upgrade, final_install_options, source, ignore_failure)
     else # If we make it here, try the action as a version number.
       chocolatey_package package do
         version action_option
-        options install_options
+        options final_install_options
         source source
         ignore_failure ignore_failure
         action :install
