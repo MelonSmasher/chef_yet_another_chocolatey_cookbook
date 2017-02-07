@@ -24,7 +24,7 @@ unless node['yacc']['install_options'].nil?
     # Are the install options an array?
     if node['yacc']['install_options'].is_a? Array
       # Join into a single array
-      install_options = install_options.to_a += node['yacc']['install_options'].to_a
+      (install_options << node['yacc']['install_options']).flatten!
     else
       log 'YACC Global' do
         message "Global install options are malformed ignoring..."
@@ -47,7 +47,7 @@ node['yacc']['packages'].each do |package, package_options|
         # Check to see if it's an array or string
         if package_options['install_options'].is_a? Array
           # Join the arrays into a single array
-          install_options = install_options.to_a += package_options['install_options'].to_a
+          (install_options << package_options['install_options']).flatten!
         else
           log 'YACC Package' do
             message "The package: '#{package}' contains a malformed install option, ignoring..."
