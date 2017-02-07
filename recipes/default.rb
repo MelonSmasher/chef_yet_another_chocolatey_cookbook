@@ -23,8 +23,6 @@ unless node['yacc']['install_options'].nil?
   unless node['yacc']['install_options'].empty?
     # Are the install options an array?
     if node['yacc']['install_options'].is_a? Array
-      # Strip each array element then join array to a single string
-      #install_options = node['yacc']['install_options'].each { |a| a.strip! if a.respond_to? :strip! }.join(' ')
       # Join into a single array
       install_options = node['yacc']['install_options'].concat(install_options)
     else
@@ -60,7 +58,7 @@ node['yacc']['packages'].each do |package, package_options|
     end
   end
   # If the install options are empty make into a blank string otherwise strip each element of the array and join into a string separated by spaces
-  install_options = install_options.empty? ? '' : install_options.each { |a| a.strip! if a.respond_to? :strip! }.join(' ')
+  install_options = install_options.empty? ? '' : install_options.is_a? Array ? install_options.each { |a| a.strip! if a.respond_to? :strip! }.join(' ') : install_options.strip
   # Switch over the various actions and pass in the correct action symbol
   case action_option
     when 'install'
