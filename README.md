@@ -55,7 +55,9 @@ Define packages:
     "packages" : {
       "googlechrome": {
         "action": "56.0.2924.76",
-        "install_options": "--ignorechecksum"
+        "install_options": [
+          "--ignorechecksum"
+         ]
       },
       "firefox": {
         "action": "upgrade",
