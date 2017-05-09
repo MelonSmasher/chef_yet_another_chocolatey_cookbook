@@ -75,7 +75,7 @@ node['yacc']['packages'].each do |package, package_options|
     when 'install'
       run_upstream(package, :install, final_install_options, source, ignore_failure)
     when 'purge'
-      run_upstream(package, :purge, final_install_options, source, ignore_failure)
+      run_upstream(package, :remove, final_install_options, source, ignore_failure)
     when 'reconfig'
       run_upstream(package, :reconfig, final_install_options, source, ignore_failure)
     when 'remove'
