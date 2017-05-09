@@ -3,9 +3,11 @@
 # Recipe:: default
 #
 
+include_recipe 'chocolatey'
+
 # This function calls the upstream chocolatey resource built into chefs
 def run_upstream(package, action, options, source, ignore_failure)
-  chocolatey_package package do
+  chocolatey package do
     options options
     source source
     ignore_failure ignore_failure
@@ -80,7 +82,7 @@ node['yacc']['packages'].each do |package, package_options|
     when 'upgrade'
       run_upstream(package, :upgrade, final_install_options, source, ignore_failure)
     else # If we make it here, try the action as a version number.
-      chocolatey_package package do
+      chocolatey package do
         version action_option
         options final_install_options
         source source

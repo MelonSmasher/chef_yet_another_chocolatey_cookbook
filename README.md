@@ -4,6 +4,10 @@ Manages chocolatey packages through attributes.
 
 ## Requirements
 
+### Depends
+
+- [chocolatey](https://supermarket.chef.io/cookbooks/chocolatey) ~> 1.2.0
+
 ### Platforms
 
 - Windows
