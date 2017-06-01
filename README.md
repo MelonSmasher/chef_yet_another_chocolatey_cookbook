@@ -80,9 +80,9 @@ Global install options that will be run with each choco install (Default: `[]`)
 ```json
 {
   "yacc" : {
-    "install_options" : [
-      "--cachelocation C:\\temp"
-    ]
+    "install_options" : {
+      "cachelocation": "C:\\tmp"
+    }
   }
 }
 ```
@@ -101,10 +101,9 @@ Define packages:
       },
       "firefox": {
         "action": "upgrade",
-        "install_options": [
-          "--ignorechecksum",
-          "--cachelocation C:\\windows\\temp"
-        ]
+        "install_options": {
+          "cachelocation": "C:\\tmp"
+        }
       },
       "chocolateygui": {
         "action": "purge"

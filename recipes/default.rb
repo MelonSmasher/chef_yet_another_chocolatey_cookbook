@@ -6,9 +6,12 @@
 include_recipe 'chocolatey'
 
 # This function calls the upstream chocolatey resource built into chefs
-def run_upstream(package, action, options, ignore_failure)
-  chocolatey_package package do
+def run_upstream(package, action, options, source, ignore_failure)
+  chocolatey package do
     options options
+    unless source.nil?
+      source source
+    end
     ignore_failure ignore_failure
     action action
   end
@@ -78,7 +81,9 @@ default_sources.each do |name, options|
     cmd << "--allowselfservice"
   end
 
-  system(cmd.join(' '))
+  execute 'Set Source' do
+    command cmd.join(' ')
+  end
 
 end
 
@@ -101,10 +106,14 @@ unless node['yacc']['install_options'].nil?
   end
 end
 
+source = nil
+
 # Loop over packages
 node['yacc']['packages'].each do |package, package_options|
   # Grab the desired action/version
   action_option = package_options['action']
+  # Is the source overridden for this package?
+  source = package_options['source'] unless package_options['action'].empty?
   # If there are any package specific install options append them to the global install options
   if package_options.key?('install_options')
     unless package_options['install_options'].nil?
@@ -123,31 +132,37 @@ node['yacc']['packages'].each do |package, package_options|
     end
   end
 
-  if install_options.is_a? Array
-    # If the install options are empty make into a blank string otherwise strip each element of the array and join into a string separated by spaces
-    final_install_options = install_options.to_a.empty? ? '' : install_options.to_a.each {|a| a.strip! if a.respond_to? :strip!}.join(' ')
-  else
-    final_install_options = ''
+  final_install_options = {}
+
+  unless install_options.empty?
+    install_options.each do |key, value|
+      final_install_options.store(key, value)
+    end
   end
+
+  final_install_options = final_install_options.to_h
 
   # Switch over the various actions and pass in the correct action symbol
   case action_option.to_s.to_sym
     when :install
-      run_upstream(package, :install, final_install_options, ignore_failure)
+      run_upstream(package, :install, final_install_options, source, ignore_failure)
     when :purge
-      run_upstream(package, :purge, final_install_options, ignore_failure)
+      run_upstream(package, :remove, final_install_options, source, ignore_failure)
     when :reconfig
-      run_upstream(package, :reconfig, final_install_options, ignore_failure)
+      run_upstream(package, :reconfig, final_install_options, source, ignore_failure)
     when :remove
-      run_upstream(package, :remove, final_install_options, ignore_failure)
+      run_upstream(package, :remove, final_install_options, source, ignore_failure)
     when :uninstall
-      run_upstream(package, :uninstall, final_install_options, ignore_failure)
+      run_upstream(package, :uninstall, final_install_options, source, ignore_failure)
     when :upgrade
-      run_upstream(package, :upgrade, final_install_options, ignore_failure)
+      run_upstream(package, :upgrade, final_install_options, source, ignore_failure)
     else # If we make it here, try the action as a version number.
-      chocolatey_package package do
+      chocolatey package do
         version action_option
         options final_install_options
+        unless source.nil?
+          source source
+        end
         ignore_failure ignore_failure
         action :install
       end
