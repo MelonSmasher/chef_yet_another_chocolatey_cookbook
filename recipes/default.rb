@@ -9,14 +9,82 @@ include_recipe 'chocolatey'
 def run_upstream(package, action, options, source, ignore_failure)
   chocolatey_package package do
     options options
-    source source
+    unless source.nil?
+      source source
+    end
     ignore_failure ignore_failure
     action action
   end
 end
 
-# Grab the global package source
-source = node['yacc']['source']
+# Grab the default sources
+default_sources = node['yacc']['default_sources']
+
+if default_sources.nil?
+  default_sources = {
+      :chocolatey => {
+          :source => 'https://chocolatey.org/api/v2/',
+          :action => 'present',
+          :priority => 0
+      }
+  }
+end
+
+default_sources.each do |name, options|
+
+  cmd = ['choco', 'source']
+  case options[:action].to_s
+    when 'present'
+      cmd << 'add'
+    when 'absent'
+      cmd << 'remove'
+    when 'enabled'
+      cmd << 'enable'
+    when 'disabled'
+      cmd << 'disable'
+    else
+      log 'YACC Choco Source' do
+        message "Invalid action #{options[:action].to_s}"
+        level :warn
+      end
+      break
+  end
+
+  cmd << "-n=#{name.to_s}"
+  cmd << "-s\"#{options[:source].to_s}\""
+
+  if options[:priority]
+    cmd << "--priority=#{options[:priority].to_s}"
+  end
+
+  if options[:user]
+    cmd << "-u=\"#{options[:user].to_s}\""
+  end
+
+  if options[:password]
+    cmd << "-p=\"#{options[:password].to_s}\""
+  end
+
+  if options[:cert]
+    cmd << "--cert=\"#{options[:cert].to_s}\""
+  end
+
+  if options[:cert_password]
+    cmd << "--certpassword=\"#{options[:cert_password].to_s}\""
+  end
+
+  if options[:bypass_proxy]
+    cmd << "--bypassproxy"
+  end
+
+  if options[:allow_self_service]
+    cmd << "--allowselfservice"
+  end
+
+  system(cmd.join(' '))
+
+end
+
 # Global value for ignoring failures
 ignore_failure = node['yacc']['ignore_failure']
 # Grab install options that will be applied to each package
@@ -35,6 +103,8 @@ unless node['yacc']['install_options'].nil?
     end
   end
 end
+
+source = nil
 
 # Loop over packages
 node['yacc']['packages'].each do |package, package_options|
@@ -62,7 +132,7 @@ node['yacc']['packages'].each do |package, package_options|
 
   if install_options.is_a? Array
     # If the install options are empty make into a blank string otherwise strip each element of the array and join into a string separated by spaces
-    final_install_options = install_options.to_a.empty? ? '' : install_options.to_a.each { |a| a.strip! if a.respond_to? :strip! }.join(' ')
+    final_install_options = install_options.to_a.empty? ? '' : install_options.to_a.each {|a| a.strip! if a.respond_to? :strip!}.join(' ')
   else
     final_install_options = ''
   end
@@ -85,7 +155,9 @@ node['yacc']['packages'].each do |package, package_options|
       chocolatey_package package do
         version action_option
         options final_install_options
-        source source
+        unless source.nil?
+          source source
+        end
         ignore_failure ignore_failure
         action :install
       end

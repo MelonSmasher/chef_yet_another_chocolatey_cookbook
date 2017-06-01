@@ -18,12 +18,48 @@ Manages chocolatey packages through attributes.
 
 ## Attributes
 
-Set the chocolatey source: (Default: `https://chocolatey.org/api/v2`)
+Set the chocolatey default sources: 
+
+Default: 
+```json
+{
+  "chocolatey": {
+    "source": "https://chocolatey.org/api/v2/",
+    "action": "present",
+    "priority": 0
+  }
+}
+```
+
+Example:
 
 ```json
 {
   "yacc" : {
-    "source" : "https://chocolatey.org/api/v2"
+    "default_sources" : {
+      "private": {
+        "source": "https://repo.private.com/api/v2/",
+        "action": "present",
+        "user": "some_user",
+        "password": "some_password",
+        "priority": 1
+      },
+      "private2": {
+        "source": "https://repo2.private.com/api/v2/",
+        "action": "disabled",
+        "priority": 99
+      },
+      "private3": {
+        "source": "https://repo3.private.com/api/v2/",
+        "action": "absent",
+        "priority": 100
+      },
+      "chocolatey": {
+        "source": "https://chocolatey.org/api/v2/",
+        "action": "present",
+        "priority": 0
+      }
+    }
   }
 }
 ```
@@ -65,7 +101,7 @@ Define packages:
       },
       "firefox": {
         "action": "upgrade",
-        "source": "https://private.repo.com/api/v2",
+        "source": "\\\\path\\to\\UNC\\share\\install.mis",
         "install_options": [
           "--ignorechecksum",
           "--cachelocation C:\\windows\\temp"
