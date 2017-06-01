@@ -68,21 +68,21 @@ node['yacc']['packages'].each do |package, package_options|
   end
 
   # Switch over the various actions and pass in the correct action symbol
-  case action_option
-    when 'install'
+  case action_option.to_s.to_sym
+    when :install
       run_upstream(package, :install, final_install_options, source, ignore_failure)
-    when 'purge'
+    when :purge
       run_upstream(package, :purge, final_install_options, source, ignore_failure)
-    when 'reconfig'
+    when :reconfig
       run_upstream(package, :reconfig, final_install_options, source, ignore_failure)
-    when 'remove'
+    when :remove
       run_upstream(package, :remove, final_install_options, source, ignore_failure)
-    when 'uninstall'
+    when :uninstall
       run_upstream(package, :uninstall, final_install_options, source, ignore_failure)
-    when 'upgrade'
+    when :upgrade
       run_upstream(package, :upgrade, final_install_options, source, ignore_failure)
     else # If we make it here, try the action as a version number.
-      chocolatey package do
+      chocolatey_package package do
         version action_option
         options final_install_options
         source source
