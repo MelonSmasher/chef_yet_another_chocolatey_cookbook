@@ -101,7 +101,6 @@ Define packages:
       },
       "firefox": {
         "action": "upgrade",
-        "source": "\\\\path\\to\\UNC\\share\\install.mis",
         "install_options": [
           "--ignorechecksum",
           "--cachelocation C:\\windows\\temp"
