@@ -7,7 +7,7 @@ include_recipe 'chocolatey'
 
 # This function calls the upstream chocolatey resource built into chefs
 def run_upstream(package, action, options, source, ignore_failure)
-  chocolatey package do
+  chocolatey_package package do
     options options
     source source
     ignore_failure ignore_failure
@@ -60,22 +60,19 @@ node['yacc']['packages'].each do |package, package_options|
     end
   end
 
-  final_install_options = {}
-
-  unless install_options.empty?
-    install_options.each do |key, value|
-      final_install_options.store(key, value)
-    end
+  if install_options.is_a? Array
+    # If the install options are empty make into a blank string otherwise strip each element of the array and join into a string separated by spaces
+    final_install_options = install_options.to_a.empty? ? '' : install_options.to_a.each { |a| a.strip! if a.respond_to? :strip! }.join(' ')
+  else
+    final_install_options = ''
   end
-
-  final_install_options = final_install_options.to_h
 
   # Switch over the various actions and pass in the correct action symbol
   case action_option
     when 'install'
       run_upstream(package, :install, final_install_options, source, ignore_failure)
     when 'purge'
-      run_upstream(package, :remove, final_install_options, source, ignore_failure)
+      run_upstream(package, :purge, final_install_options, source, ignore_failure)
     when 'reconfig'
       run_upstream(package, :reconfig, final_install_options, source, ignore_failure)
     when 'remove'
