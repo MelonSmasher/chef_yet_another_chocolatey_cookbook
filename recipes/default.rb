@@ -3,7 +3,14 @@
 # Recipe:: default
 #
 
-include_recipe 'chocolatey'
+begin
+  include_recipe 'chocolatey'
+rescue
+  log 'YACC Choco' do
+    message "error running chocolatey cookbook"
+    level :warn
+  end
+end
 
 # This function calls the upstream chocolatey resource built into chefs
 def run_upstream(package, action, options, source, ignore_failure)
