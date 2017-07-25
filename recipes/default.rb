@@ -14,7 +14,7 @@ end
 
 # This function calls the upstream chocolatey resource built into chefs
 def run_upstream(package, action, options, source, ignore_failure)
-  chocolatey package do
+  chocolatey_package package do
     options options
     unless source.nil?
       source source
@@ -97,18 +97,11 @@ end
 # Global value for ignoring failures
 ignore_failure = node['yacc']['ignore_failure']
 # Grab install options that will be applied to each package
-install_options = []
+install_options = ''
 unless node['yacc']['install_options'].nil?
   unless node['yacc']['install_options'].empty?
-    # Are the install options an array?
-    if node['yacc']['install_options'].is_a? Array
-      # Join into a single array
-      (install_options << node['yacc']['install_options']).flatten!
-    else
-      log 'YACC Global' do
-        message "Global install options are malformed ignoring..."
-        level :warn
-      end
+    node['yacc']['install_options'].each do |opt|
+      install_options = "#{install_options}#{opt} "
     end
   end
 end
@@ -121,33 +114,19 @@ node['yacc']['packages'].each do |package, package_options|
   action_option = package_options['action']
   # Is the source overridden for this package?
   source = package_options['source'] unless package_options['action'].empty?
+  final_install_options = install_options
   # If there are any package specific install options append them to the global install options
   if package_options.key?('install_options')
     unless package_options['install_options'].nil?
       unless package_options['install_options'].empty?
-        # Check to see if it's an array or string
-        if package_options['install_options'].is_a? Array
-          # Join the arrays into a single array
-          (install_options << package_options['install_options']).flatten!
-        else
-          log 'YACC Package' do
-            message "The package: '#{package}' contains a malformed install option, ignoring..."
-            level :warn
-          end
+        package_options['install_options'].each do |opt|
+          final_install_options = "#{final_install_options}#{opt} "
         end
       end
     end
   end
 
-  final_install_options = {}
-
-  unless install_options.empty?
-    install_options.each do |key, value|
-      final_install_options.store(key, value)
-    end
-  end
-
-  final_install_options = final_install_options.to_h
+  final_install_options.to_s.strip!
 
   # Switch over the various actions and pass in the correct action symbol
   case action_option.to_s.to_sym
@@ -164,7 +143,7 @@ node['yacc']['packages'].each do |package, package_options|
     when :upgrade
       run_upstream(package, :upgrade, final_install_options, source, ignore_failure)
     else # If we make it here, try the action as a version number.
-      chocolatey package do
+      chocolatey_package package do
         version action_option
         options final_install_options
         unless source.nil?
