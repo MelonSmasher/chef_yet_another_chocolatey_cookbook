@@ -101,7 +101,7 @@ install_options = ''
 unless node['yacc']['install_options'].nil?
   unless node['yacc']['install_options'].empty?
     node['yacc']['install_options'].each do |opt|
-      install_options = "#{install_options}#{opt} "
+      install_options = "#{install_options} #{opt}"
     end
   end
 end
@@ -120,7 +120,7 @@ node['yacc']['packages'].each do |package, package_options|
     unless package_options['install_options'].nil?
       unless package_options['install_options'].empty?
         package_options['install_options'].each do |opt|
-          final_install_options = "#{final_install_options}#{opt} "
+          final_install_options = "#{final_install_options} #{opt}"
         end
       end
     end
