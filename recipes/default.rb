@@ -24,6 +24,16 @@ def run_upstream(package, action, options, source, ignore_failure)
   end
 end
 
+
+config = node['yacc']['config']
+
+config.each do |name, options|
+  cmd = ['choco', 'config', options['action'].to_s, '--name', name.to_s, '--value', options['value'].to_s]
+  execute "Choco Config #{name.to_s}" do
+    command cmd.join(' ')
+  end
+end
+
 # Grab the default sources
 default_sources = node['yacc']['default_sources']
 

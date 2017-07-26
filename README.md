@@ -65,6 +65,26 @@ Example:
 ```
 
 
+Set config options(Default: `{}`):
+
+Valid actions: `set|unset`
+
+Example:
+
+```json
+{
+  "yacc" : {
+    "config" : {
+      "cacheLocation": {
+        "action": "set",
+        "value": "C:\\tmp"
+      }
+    }
+  }
+}
+```
+
+
 Determine if failures should be ignored(Default: `false`):
 
 ```json
@@ -75,14 +95,14 @@ Determine if failures should be ignored(Default: `false`):
 }
 ```
 
-Global install options that will be run with each choco install (Default: `[]`)
+Global install options that will be run with each choco install (Default: `{}`)
 
 ```json
 {
   "yacc" : {
-    "install_options" : {
-      "cachelocation": "C:\\tmp"
-    }
+    "install_options" : [
+      "--cachelocation C:\\tmp"
+    ]
   }
 }
 ```
@@ -96,14 +116,12 @@ Define packages:
       "googlechrome": {
         "action": "56.0.2924.76",
         "install_options": [
-          "--ignorechecksum"
+          "--ignorechecksum",
+          "--allow-downgrade"
         ]
       },
       "firefox": {
-        "action": "upgrade",
-        "install_options": {
-          "cachelocation": "C:\\tmp"
-        }
+        "action": "upgrade"
       },
       "chocolateygui": {
         "action": "purge"
