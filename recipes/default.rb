@@ -19,7 +19,7 @@ end
 config = node['yacc']['config']
 
 config.each do |name, options|
-  cmd = ['choco', 'config', options['action'].to_s, '--name', name.to_s, '--value', options['value'].to_s]
+  cmd = ['%chocolateyinstall%\choco.exe', 'config', options['action'].to_s, '--name', name.to_s, '--value', options['value'].to_s]
   execute "Choco Config #{name.to_s}" do
     command cmd.join(' ')
   end
@@ -40,7 +40,7 @@ end
 
 default_sources.each do |name, options|
 
-  cmd = ['choco', 'source']
+  cmd = ['%chocolateyinstall%\choco.exe', 'source']
   case options[:action].to_s
     when 'present'
       cmd << 'add'
