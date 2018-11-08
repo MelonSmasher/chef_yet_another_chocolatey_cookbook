@@ -139,7 +139,7 @@ Uninstall arbitrary software from programs and features (** requires Chocolatey 
     "business" : {
       "uninstall_from_programs": [
         "NSClient++ (x64)",
-        "Puppet*"
+        "Puppet *"
       ]
     }
   }
