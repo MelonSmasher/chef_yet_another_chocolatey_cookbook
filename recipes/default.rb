@@ -15,6 +15,13 @@ def run_upstream(package, action, options, source, ignore_failure)
   end
 end
 
+# This function will uninstall software from programs and features
+def choco_uninstall_from_programs(program)
+  execute 'Choco Uninstall' do
+    command "%chocolateyinstall%\choco.exe uninstall #{program.to_s} --from-programs -y -f"
+  end
+end
+
 
 config = node['yacc']['config']
 
@@ -42,20 +49,20 @@ default_sources.each do |name, options|
 
   cmd = ['%chocolateyinstall%\choco.exe', 'source']
   case options[:action].to_s
-    when 'present'
-      cmd << 'add'
-    when 'absent'
-      cmd << 'remove'
-    when 'enabled'
-      cmd << 'enable'
-    when 'disabled'
-      cmd << 'disable'
-    else
-      log 'YACC Choco Source' do
-        message "Invalid action #{options[:action].to_s}"
-        level :warn
-      end
-      break
+  when 'present'
+    cmd << 'add'
+  when 'absent'
+    cmd << 'remove'
+  when 'enabled'
+    cmd << 'enable'
+  when 'disabled'
+    cmd << 'disable'
+  else
+    log 'YACC Choco Source' do
+      message "Invalid action #{options[:action].to_s}"
+      level :warn
+    end
+    break
   end
 
   cmd << "-n=#{name.to_s}"
@@ -131,27 +138,32 @@ node['yacc']['packages'].each do |package, package_options|
 
   # Switch over the various actions and pass in the correct action symbol
   case action_option.to_s.to_sym
-    when :install
-      run_upstream(package, :install, final_install_options, source, ignore_failure)
-    when :purge
-      run_upstream(package, :remove, final_install_options, source, ignore_failure)
-    when :reconfig
-      run_upstream(package, :reconfig, final_install_options, source, ignore_failure)
-    when :remove
-      run_upstream(package, :remove, final_install_options, source, ignore_failure)
-    when :uninstall
-      run_upstream(package, :uninstall, final_install_options, source, ignore_failure)
-    when :upgrade
-      run_upstream(package, :upgrade, final_install_options, source, ignore_failure)
-    else # If we make it here, try the action as a version number.
-      chocolatey_package package do
-        version action_option
-        options final_install_options
-        unless source.nil?
-          source source
-        end
-        ignore_failure ignore_failure
-        action :install
+  when :install
+    run_upstream(package, :install, final_install_options, source, ignore_failure)
+  when :purge
+    run_upstream(package, :remove, final_install_options, source, ignore_failure)
+  when :reconfig
+    run_upstream(package, :reconfig, final_install_options, source, ignore_failure)
+  when :remove
+    run_upstream(package, :remove, final_install_options, source, ignore_failure)
+  when :uninstall
+    run_upstream(package, :uninstall, final_install_options, source, ignore_failure)
+  when :upgrade
+    run_upstream(package, :upgrade, final_install_options, source, ignore_failure)
+  else # If we make it here, try the action as a version number.
+    chocolatey_package package do
+      version action_option
+      options final_install_options
+      unless source.nil?
+        source source
       end
+      ignore_failure ignore_failure
+      action :install
+    end
   end
+end
+
+# Uninstall software from programs and features
+node['yacc']['business']['uninstall_from_programs'].each do |program_name|
+  choco_uninstall_from_programs(program_name)
 end

@@ -131,6 +131,21 @@ Define packages:
 }
 ```
 
+Uninstall arbitrary software from programs and features (** requires Chocolatey for Business **):
+
+```json
+{
+  "yacc" : {
+    "business" : {
+      "uninstall_from_programs": [
+        "NSClient++ (x64)",
+        "Puppet*"
+      ]
+    }
+  }
+}
+```
+
 The `action` field follows the same actions as [this documentation](https://docs.chef.io/resource_chocolatey_package.html), it also can take a version number.
 
 ## Usage
