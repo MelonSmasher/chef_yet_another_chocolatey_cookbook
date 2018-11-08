@@ -17,8 +17,8 @@ end
 
 # This function will uninstall software from programs and features
 def choco_uninstall_from_programs(program)
-  execute 'Choco Uninstall' do
-    command "%chocolateyinstall%\choco.exe uninstall \"#{program.to_s}\" --from-programs -y -f"
+  execute 'choco_uninstall_program' do
+    command "%chocolateyinstall%\\choco.exe uninstall \"#{program.to_s}\" --from-programs -y -f"
   end
 end
 
