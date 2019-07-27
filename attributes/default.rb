@@ -5,4 +5,6 @@ default['yacc']['default_sources'] = {:chocolatey => {:source => 'https://chocol
 default['yacc']['packages'] = {}
 
 # Business features
+default['yacc']['business']['synchronize'] = false
 default['yacc']['business']['uninstall_from_programs'] = []
+default['yacc']['business']['optimize'] = false

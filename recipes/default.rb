@@ -22,6 +22,19 @@ def choco_uninstall_from_programs(program)
   end
 end
 
+# This function synchronizes against the system installed software that are not installed as packages on Chocolatey.
+def choco_synchronize()
+  execute 'choco_sync' do
+    command "%chocolateyinstall%\\choco.exe synchronize -y"
+  end
+end
+
+# This function is similar to Package Reducer, but reduces for existing packages.
+def choco_optimize()
+  execute 'choco_optimize' do
+    command "%chocolateyinstall%\\choco.exe optimize -y"
+  end
+end
 
 config = node['yacc']['config']
 
@@ -163,7 +176,17 @@ node['yacc']['packages'].each do |package, package_options|
   end
 end
 
+# If we should synchronize... do it
+if node['yacc']['business']['synchronize']
+  choco_synchronize
+end
+
 # Uninstall software from programs and features
 node['yacc']['business']['uninstall_from_programs'].each do |program_name|
   choco_uninstall_from_programs(program_name)
+end
+
+# If we should optimize... do it
+if node['yacc']['business']['optimize']
+  choco_optimize
 end

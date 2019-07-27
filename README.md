@@ -18,6 +18,8 @@ Manages chocolatey packages through attributes.
 
 ## Attributes
 
+### Choco Free Features
+
 Set the chocolatey default sources: 
 
 Default: 
@@ -131,7 +133,25 @@ Define packages:
 }
 ```
 
-Uninstall arbitrary software from programs and features (** requires Chocolatey for Business **):
+The `action` field follows the same actions as [this documentation](https://docs.chef.io/resource_chocolatey_package.html), it also can take a version number.
+
+### Choco Business Features
+
+[Synchronize](https://chocolatey.org/docs/commands-synchronize) all installed software with Chocolatey (** requires Chocolatey for Business **):
+
+(Default: `false`)
+
+```json
+{
+  "yacc" : {
+    "business" : {
+      "synchronize": true
+    }
+  }
+}
+```
+
+[Uninstall](https://chocolatey.org/docs/commands-uninstall) arbitrary software from programs and features (** requires Chocolatey for Business **):
 
 ```json
 {
@@ -146,7 +166,19 @@ Uninstall arbitrary software from programs and features (** requires Chocolatey 
 }
 ```
 
-The `action` field follows the same actions as [this documentation](https://docs.chef.io/resource_chocolatey_package.html), it also can take a version number.
+[Optimize](https://chocolatey.org/docs/commands-optimize) the Choco packages and the cache by removing unused files and reducing package file sizes (** requires Chocolatey for Business **):
+
+(Default: `false`)
+
+```json
+{
+  "yacc" : {
+    "business" : {
+      "optimize": true
+    }
+  }
+}
+```
 
 ## Usage
 
